@@ -30,13 +30,13 @@ npm install
 ### Running Tests
 
 ```bash
-coming soon..
+coming soon...
 ```
 
 ### Local Development
 
 ```bash
-coming soon..
+coming soon...
 ```
 
 ## Contributing
@@ -49,5 +49,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-- Website: - coming soon..
-- Telegram: coming soon..
+- Website: - coming soon...
+- Telegram: coming soon...
