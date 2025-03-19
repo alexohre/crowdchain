@@ -1,5 +1,6 @@
 # Crowdchain
 
+![Crowdchain Cover Image](crowdch.png)
 Empowering Community-Driven Funding
 
 ## Overview
@@ -17,26 +18,26 @@ Crowdchain is a decentralized crowdfunding platform designed to support impactfu
 ### Prerequisites
 
 - Node.js v16 or higher
-- MetaMask wallet
+- Yarn
 
 ### Installation
 
 ```bash
 git clone https://github.com/Softalx-Solutions/crowdchain.git
 cd crowdchain
-npm install
+yarn
 ```
 
 ### Running Tests
 
 ```bash
-coming soon..
+coming soon...
 ```
 
 ### Local Development
 
 ```bash
-coming soon..
+yarn dev
 ```
 
 ## Contributing
@@ -49,5 +50,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-- Website: - coming soon..
-- Telegram: coming soon..
+- Website: - [crowdchain.vercel.app](crowdchain.vercel.app)
+- Telegram: [https://t.me/crowdchain1](https://t.me/crowdchain1)
