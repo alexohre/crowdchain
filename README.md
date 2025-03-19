@@ -7,7 +7,7 @@ Empowering Community-Driven Funding
 
 Crowdchain is a decentralized crowdfunding platform designed to support impactful projects in health, education, and social welfare. Our mission is to make giving easy, efficient, and rewarding.
 
-🎨 [View Design File here on Mottif](https://motiff.com/file/isWQKewamSceMYm8TXkUz6W?nodeId=0%3A1&type=design "crowdchain")
+🎨 [View Design File here on Motiff](https://motiff.com/file/isWQKewamSceMYm8TXkUz6W?nodeId=0%3A1&type=design "crowdchain")
 
 ## Key Features
 
@@ -53,5 +53,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-- Website: - [crowdchain.vercel.app](crowdchain.vercel.app)
+- Website: - [crowdchain-strk.vercel.app](crowdchain-strk.vercel.app)
 - Telegram: [https://t.me/crowdchain1](https://t.me/crowdchain1)
