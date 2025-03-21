@@ -6,7 +6,8 @@ return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         <div>
             <h3 className="text-xl font-bold mb-4">CrowdChain</h3>
-            <p>Empowering innovation through decentralized crowdfunding on StarkNet</p>
+            <p>Empowering innovation through decentralized crowdfunding on<br/>
+             StarkNet</p>
         </div>
 
         <div>
