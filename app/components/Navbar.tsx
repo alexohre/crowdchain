@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Menu } from "lucide-react";
 
+
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -35,7 +36,7 @@ export default function Navbar() {
             <Link href="/faqs" className="text-gray-700 hover:text-[#1A5D1A] transition-colors">
               Faqs
             </Link>
-            <Link href="/new-campaign" className="text-gray-700 hover:text-[#1A5D1A] transition-colors">
+            <Link href="/new_campaign" className="text-gray-700 hover:text-[#1A5D1A] transition-colors">
               New Campaign
             </Link>
             <Link href="/dashboard" className="text-gray-700 hover:text-[#1A5D1A] transition-colors">
