@@ -4,7 +4,7 @@ export default function CreateCampaign() {
   return (
     <>
       {/* <div className="bg-gradient-to-b from-white to-green-60 py-10"> */}
-      <div className="bg-gradient-to-b from-white to-green-100 py-10">
+      <div className="bg-gradient-to-b text-black from-white to-green-100 py-10">
 
         <div className="container mx-auto px-4">
         <h1 className="text-5xl md:text-6xl font-bold text-center mb-4">
