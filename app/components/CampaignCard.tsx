@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import { Share2 } from "lucide-react";
 import { FaRegClock } from "react-icons/fa";
 
 interface CardProps {
@@ -22,7 +21,7 @@ const Card: React.FC<CardProps> = ({
   progress,
 }) => {
   return (
-    <div className="w-[300px] h-[400px]  rounded-lg overflow-hidden shadow-md bg-white ">
+    <div className="w-[300px] sm:w-[400px] h-[400px]  rounded-lg overflow-hidden shadow-md bg-white ">
       <div className="relative h-48 ">
         <Image
           src={image}
@@ -32,7 +31,15 @@ const Card: React.FC<CardProps> = ({
           className="rounded-t-lg"
         />
         <div className="absolute top-2 right-5 bg-white/80 p-1 rounded-full">
-          <Share2 className="w-5 h-5 text-gray-700" />
+        <Image
+        src="/share.png"
+        height={5}
+        width={15}
+        alt="share"
+
+        
+         />
+         
         </div>
       </div>
 
