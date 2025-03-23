@@ -24,39 +24,24 @@ export default function Navbar() {
 						</Link>
 					</div>
 
-					{/* Desktop Navigation */}
-					<nav className="hidden md:flex items-center space-x-8">
-						<Link
-							href="/"
-							className="text-gray-700 hover:text-[#1A5D1A] transition-colors"
-						>
-							Home
-						</Link>
-						<Link
-							href="/campaigns"
-							className="text-gray-700 hover:text-[#1A5D1A] transition-colors"
-						>
-							Campaigns
-						</Link>
-						<Link
-							href="/faqs"
-							className="text-gray-700 hover:text-[#1A5D1A] transition-colors"
-						>
-							Faqs
-						</Link>
-						<Link
-							href="/new-campaign"
-							className="text-gray-700 hover:text-[#1A5D1A] transition-colors"
-						>
-							New Campaign
-						</Link>
-						<Link
-							href="/dashboard"
-							className="text-gray-700 hover:text-[#1A5D1A] transition-colors"
-						>
-							Dashboard
-						</Link>
-					</nav>
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link href="/" className="text-gray-700 hover:text-[#1A5D1A] transition-colors">
+              Home
+            </Link>
+            <Link href="/Campaigns" className="text-gray-700 hover:text-[#1A5D1A] transition-colors">
+              Campaigns
+            </Link>
+            <Link href="/faqs" className="text-gray-700 hover:text-[#1A5D1A] transition-colors">
+              Faqs
+            </Link>
+            <Link href="/new_campaign" className="text-gray-700 hover:text-[#1A5D1A] transition-colors">
+              New Campaign
+            </Link>
+            <Link href="/dashboard" className="text-gray-700 hover:text-[#1A5D1A] transition-colors">
+              Dashboard
+            </Link>
+          </nav>
 
 					{/* Desktop Connect Wallet Button */}
 					<div className="hidden md:block">
