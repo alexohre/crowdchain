@@ -7,7 +7,7 @@ export default function CampaignDetails(){
         <>
         <div className="bg-white text-black py-10">
 
-            <div className="mx-auto px-4 bg-gradient-to-b to-green-100 from-white min-h-[50vh] w-full border-black border-b-8 flex items-center justify-center mb-12">
+            <div className="mx-auto px-4 bg-gradient-to-b to-green-100 from-white min-h-[50vh] w-full flex items-center justify-center mb-12">
             <h1 className="text-5xl md:text-6xl font-bold text-center mb-4">
                 Join the <span className="text-green-700">movement</span> and be part of <br /> 
                 something <span className="text-green-700">amazing!</span>
