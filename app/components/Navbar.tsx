@@ -25,7 +25,7 @@ export default function Navbar() {
 					</div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-3 lg:space-x-8 text-xs lg:text-base">
             <Link href="/" className="text-gray-700 hover:text-[#1A5D1A] transition-colors">
               Home
             </Link>
@@ -37,6 +37,9 @@ export default function Navbar() {
             </Link>
             <Link href="/new-campaign" className="text-gray-700 hover:text-[#1A5D1A] transition-colors">
               New Campaign
+            </Link>
+            <Link href="/leaderboard" className="text-gray-700 hover:text-[#1A5D1A] transition-colors">
+            Leaderboard
             </Link>
             <Link href="/dashboard" className="text-gray-700 hover:text-[#1A5D1A] transition-colors">
               Dashboard
@@ -101,6 +104,13 @@ export default function Navbar() {
 							onClick={() => setIsMenuOpen(false)}
 						>
 							New Campaign
+						</Link>
+            <Link
+							href="/leaderboard"
+							className="block px-3 py-2 text-gray-700 hover:text-[#1A5D1A] hover:bg-gray-50 rounded-md"
+							onClick={() => setIsMenuOpen(false)}
+						>
+							Leaderboard
 						</Link>
 						<Link
 							href="/dashboard"
