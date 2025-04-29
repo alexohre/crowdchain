@@ -4,6 +4,7 @@ import CampaignCard from "../components/CampaignCard";
 import campaigns from "../data";
 import Link from "next/link";
 
+
 const itemsPerPage = 9;
 
 const Page = () => {

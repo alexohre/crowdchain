@@ -1,7 +1,9 @@
 import Image from "next/image"
+import React,{useState} from "react"
 import { Share2 } from "lucide-react"
 
-// Sample project data
+
+
 const projects = [
   {
     id: 1,
@@ -36,6 +38,7 @@ const projects = [
 ]
 
 export default function FeaturedProjects() {
+
   return (
     <section className="w-full px-6 md:px-9 lg:px-16 max-w-7xl mx-auto mt-10">
       <h2 className="text-3xl font-bold mb-8 text-[#1A5D1A] md:text-[#000000]">Featured Projects</h2>
@@ -51,11 +54,12 @@ export default function FeaturedProjects() {
                 className="object-cover w-full h-full rounded-t-xl"
               />
                   <button
-                className="absolute top-3 right-3 bg-white rounded-lg border border-[#1A5D1A] h-10 w-10 flex items-center justify-center"
-                aria-label="Share project"
+                className=""
+               
               >
-                <Share2 className="h-6 w-6 text-[#1A5D1A]" />
+                <Share2 className="h-6 w-6 text-[#1A5D1A]"  />
               </button>
+             
 
             </div>
 
@@ -83,6 +87,8 @@ export default function FeaturedProjects() {
           </div>
         ))}
       </div>
+    
+  
     </section>
   )
 }

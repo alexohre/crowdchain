@@ -4,6 +4,7 @@ import HeroSection from './components/Hero'
 import HowItWorks from './components/HowItWorks'
 import FeaturedProjects from './components/FeaturedCampaign'
 import ExploreCategories from './components/ExploreCatergories'
+import CampaignDetails from './campaign-details/page'
 
 function Home() {
   return (
@@ -12,6 +13,7 @@ function Home() {
         <HowItWorks/>
         <FeaturedProjects/>
         <ExploreCategories/>
+        <CampaignDetails/>
 
     </div>
   )

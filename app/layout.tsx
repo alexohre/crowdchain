@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { Toaster } from "react-hot-toast";
+import {AppProvider} from "./Context/Context";
 
 const inter = Inter({
   variable: "--font-inter",

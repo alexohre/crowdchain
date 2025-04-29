@@ -1,8 +1,12 @@
 import Image from 'next/image';
+import { useState } from 'react';
 import { FaRegClock, FaGlobe, FaShareAlt } from "react-icons/fa";
 
 
 export default function CampaignDetails(){
+  const [showContributions, setShowContributions] = useState(false);
+  const [activeTab, setActiveTab] = useState<'all' | 'top'>('all');
+
     return(
         <>
         <div className="bg-white text-black py-10">
@@ -25,7 +29,17 @@ export default function CampaignDetails(){
     
           {/* Campaign Details */}
           <div className="bg-white shadow-md rounded-lg p-6 max-w-5xl mx-auto mt-4">
+            <div className='flex justify-between'>
             <h1 className="text-3xl font-bold mb-3">DeFi Innovation Hub</h1>
+            <button
+                onClick={() => setShowContributions(!showContributions)}
+                className="bg-green-800 rounded-md p-2 text-white mb-2"
+              >
+                {showContributions ? 'Hide Contributions' : 'View Contributions'}
+              </button>
+
+            </div>
+            
     
             {/* Progress Bar */}
             <div className="w-full bg-gray-300 h-2 rounded-full">
@@ -118,7 +132,64 @@ export default function CampaignDetails(){
                 Your contribution will be recorded on the blockchain and cannot be refunded.
               </p>
           </div>
+          {showContributions && (
+  <div className="mt-10 p-6 bg-white  rounded-lg justify-around">
+    <div className="flex gap-4 mb-4 border-b border-gray-200">
+      <button
+        onClick={() => setActiveTab('all')}
+        className={`pb-2 px-4 text-sm font-medium ${
+          activeTab === 'all'
+            ? 'border-b-2 border-green-700 text-green-800'
+            : 'text-gray-500'
+        }`}
+      >
+        All Contributors
+      </button>
+      <button
+        onClick={() => setActiveTab('top')}
+        className={`pb-2 px-4 text-sm font-medium ${
+          activeTab === 'top'
+            ? 'border-green-700 text-green-800'
+            : 'text-gray-500'
+        }`}
+      >
+        <div className="flex flex-row ">
+       <h1>Top Contributors</h1>
+   
         </div>
+
+
+      </button>
+    </div>
+
+    {activeTab === 'all' ? (
+      <div className="text-sm text-gray-600">
+             <div className='d'>
+          <ul className='flex  justify-around'>
+            <li>Contributor Address</li>
+            <li>Contributor Address</li>
+            <li>Contributor Address</li>
+            <li>Contributor Address</li>
+          </ul>
+        </div>
+      </div>
+    ) : (
+      <div className="text-sm text-gray-600">
+            <div className='d'>
+          <ul className='flex  justify-around'>
+            <li>Contributor Address</li>
+            <li>Contributor Address</li>
+            <li>Contributor Address</li>
+            <li>Contributor Address</li>
+          </ul>
+        </div>
+      </div>
+    )}
+  </div>
+)}
+        </div>
+     
+       
       </div>
            
         </>
