@@ -50,7 +50,7 @@ const Card: React.FC<CardProps> = ({
           />
           <button
             onClick={handleShareClick}
-            className="absolute top-2 right-2 bg-white/90 p-2 rounded-full hover:bg-white transition-colors"
+            className="absolute top-2 right-2 bg-white p-2 rounded-lg border border-green-800 hover:bg-white transition-colors"
             aria-label="Share campaign"
           >
             <Share2 className="h-4 w-4 text-[#1A5D1A]" />
