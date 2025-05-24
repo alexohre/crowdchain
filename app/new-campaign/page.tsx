@@ -1,6 +1,29 @@
 // import Navbar from '../components/Navbar'
+"use client";
+import React, { useState } from 'react';
+import { generateCampaignSlug } from '../utils/slugify';
 
 export default function CreateCampaign() {
+	const slugCache = new Map<string, string>();
+
+	const [campaignTitle, setCampaignTitle] = useState('');
+	const [campaignSlug, setCampaignSlug] = useState('');
+	
+	const handleCampaignTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const title = e.target.value;
+		setCampaignTitle(title);
+
+		if (title) {
+			if (slugCache.has(title)) {
+				setCampaignSlug(slugCache.get(title)!);
+			} else {
+				const newSlug = generateCampaignSlug(title);
+				slugCache.set(title, newSlug);
+				setCampaignSlug(newSlug);
+			}
+		}
+	};
+	
 	return (
 		<>
 			{/* <div className="bg-gradient-to-b from-white to-green-60 py-10"> */}
@@ -36,8 +59,10 @@ export default function CreateCampaign() {
 								</label>
 								<input
 									type="text"
+									value={campaignTitle}
 									placeholder="Enter your campaign title"
 									className="w-full text-gray-500 px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#1A5D1A]"
+									onChange={handleCampaignTitleChange}
 								/>
 							</div>
 
