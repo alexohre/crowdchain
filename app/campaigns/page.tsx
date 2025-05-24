@@ -1,20 +1,18 @@
 "use client";
 import React, { useState } from "react";
 import CampaignCard from "../components/CampaignCard";
-import campaigns from "../data";
+import { campaigns } from "../data/campaign";
 import Link from "next/link";
 
 const itemsPerPage = 9;
 
 const Page = () => {
   const [activeTab, setActiveTab] = useState<"active" | "passed">("active");
-  const [currentPage, setCurrentPage] = useState(1);
-
-  
+  const [currentPage, setCurrentPage] = useState(1);  
   const filteredCampaigns = campaigns.filter((campaign) =>
     activeTab === "active"
-      ? campaign.status === "active"
-      : campaign.status === "passed"
+      ? campaign.status === "Active"
+      : campaign.status === "Funded"
   );
 
   const totalPages = Math.ceil(filteredCampaigns.length / itemsPerPage);
@@ -86,12 +84,21 @@ const Page = () => {
             </button>
           </div>
 
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 mt-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 mt-6">
             {currentCampaigns.length > 0 ? (
               currentCampaigns.map((campaign) => (
-                <Link key={campaign.id} href={`/campaigns/${campaign.id}`}>
-                  <CampaignCard {...campaign} />
+                <Link key={campaign.id} href={`/campaigns/${campaign.slug}`}>
+                  <CampaignCard 
+                    id={campaign.id}
+                    title={campaign.title}
+                    description={campaign.description || ""}
+                    image={campaign.image}
+                    raisedAmount={campaign.raised.toString()}
+                    daysLeft={12}
+                    progress={Math.round((campaign.raised / campaign.goal) * 100)}
+                    status={campaign.status}
+                    slug={campaign.slug}
+                  />
                 </Link>
               ))
             ) : (
