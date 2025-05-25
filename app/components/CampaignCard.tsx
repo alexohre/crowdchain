@@ -34,6 +34,7 @@ const Card: React.FC<CardProps> = ({
 
   const handleShareClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setShowShareModal(true);
   };
 

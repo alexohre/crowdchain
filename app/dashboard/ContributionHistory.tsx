@@ -4,10 +4,10 @@ import { recentContributions } from '../data/contribution';
 // Process data for the chart
 const processedData = recentContributions
   .map(contribution => ({
-    date: contribution.date,
-    amount: parseFloat(contribution.amount.split(' ')[0]), // Extract numeric value from "5.2 ETH"
-  }))
-  .reverse(); // Show oldest to newest
+  date: contribution.date,
+  amount: contribution.amount,
+}))
+.reverse();
 
 export default function ContributionHistory() {
   return (

@@ -10,7 +10,8 @@ export default function ShareModal({ isOpen, onClose, campaignUrl, campaignTitle
 
   if (!isOpen) return null;
 
-  const handleCopyUrl = async () => {
+  const handleCopyUrl = async (e: any) => {
+    e.preventDefault();
     try {
       await navigator.clipboard.writeText(campaignUrl);
       setCopied(true);
@@ -27,17 +28,18 @@ export default function ShareModal({ isOpen, onClose, campaignUrl, campaignTitle
     email: `mailto:?subject=${encodeURIComponent(`Check out: ${campaignTitle}`)}&body=${encodeURIComponent(`I thought you might be interested in this campaign: ${campaignUrl}`)}`
   };
 
-  const openShareWindow = (url: string) => {
+  const openShareWindow = (url: string, e: any) => {
+    e.preventDefault();
     window.open(url, '_blank', 'width=600,height=400');
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={(e) => e.preventDefault()}>
       <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-bold text-gray-900">Share Campaign</h3>
           <button
-            onClick={onClose}
+            onClick={(e) => { e.preventDefault(); onClose(); }}
             className="text-gray-500 hover:text-gray-700"
           >
             <X className="h-6 w-6" />
@@ -69,7 +71,7 @@ export default function ShareModal({ isOpen, onClose, campaignUrl, campaignTitle
           <p className="text-sm font-medium text-gray-700 mb-3">Share on social media</p>
           
           <button
-            onClick={() => openShareWindow(shareUrls.twitter)}
+            onClick={(e) => openShareWindow(shareUrls.twitter, e)}
             className="w-full flex items-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50"
           >
             <FaTwitter className="h-5 w-5 text-blue-400 mr-3" />
@@ -77,7 +79,7 @@ export default function ShareModal({ isOpen, onClose, campaignUrl, campaignTitle
           </button>
 
           <button
-            onClick={() => openShareWindow(shareUrls.facebook)}
+            onClick={(e) => openShareWindow(shareUrls.facebook, e)}
             className="w-full flex items-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50"
           >
             <FaFacebook className="h-5 w-5 text-blue-600 mr-3" />
@@ -85,7 +87,7 @@ export default function ShareModal({ isOpen, onClose, campaignUrl, campaignTitle
           </button>
 
           <button
-            onClick={() => openShareWindow(shareUrls.linkedin)}
+            onClick={(e) => openShareWindow(shareUrls.linkedin, e)}
             className="w-full flex items-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50"
           >
             <FaLinkedin className="h-5 w-5 text-blue-700 mr-3" />
@@ -93,7 +95,7 @@ export default function ShareModal({ isOpen, onClose, campaignUrl, campaignTitle
           </button>
 
           <button
-            onClick={() => window.location.href = shareUrls.email}
+            onClick={(e) =>  { window.location.href = shareUrls.email, e.preventDefault() }}
             className="w-full flex items-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50"
           >
             <FaEnvelope className="h-5 w-5 text-gray-600 mr-3" />
