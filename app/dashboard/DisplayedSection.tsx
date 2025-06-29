@@ -27,14 +27,7 @@ export default function DisplayedSection({ section }: DisplayedSectionProps) {
           </div>
         ))}
       </div>
-      <button>
-        <a
-          href="/supported-campaign"
-          className="bg-[#0A4D1C] text-white px-4 py-2 rounded-md w-fit m-auto"
-        >
-          View Campaigns
-        </a>
-      </button>
+
       {selectedSection}
     </>
   );
