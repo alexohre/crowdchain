@@ -3,12 +3,14 @@ import React, { useState } from "react";
 import CampaignCard from "../components/CampaignCard";
 import { campaigns } from "../data/campaign";
 import Link from "next/link";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { calculateDaysLeft } from "../utils/slugify";
 
 const itemsPerPage = 9;
 
 const Page = () => {
   const [activeTab, setActiveTab] = useState<"active" | "passed">("active");
-  const [currentPage, setCurrentPage] = useState(1);  
+  const [currentPage, setCurrentPage] = useState(1);
   const filteredCampaigns = campaigns.filter((campaign) =>
     activeTab === "active"
       ? campaign.status === "Active"
@@ -17,17 +19,17 @@ const Page = () => {
 
   const totalPages = Math.ceil(filteredCampaigns.length / itemsPerPage);
 
-  
   if (currentPage > totalPages && totalPages > 0) {
     setCurrentPage(1);
   }
 
-  
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentCampaigns = filteredCampaigns.slice(indexOfFirstItem, indexOfLastItem);
+  const currentCampaigns = filteredCampaigns.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
 
-  
   const goToNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -57,45 +59,49 @@ const Page = () => {
 
       <div className="min-h-screen bg-gray-50 p-6 mt-5">
         <div className="max-w-7xl flex flex-col justify-center items-center mx-auto">
-          
-          
           <div className="flex items-center space-x-4 border-b pb-2 cursor-pointer">
             <button
               className={`px-4 py-2 text-black ${
-                activeTab === "active" ? "border-b-2 border-green-600 font-bold" : ""
+                activeTab === "active"
+                  ? "border-b-2 border-green-600 font-bold"
+                  : ""
               }`}
               onClick={() => {
                 setActiveTab("active");
-                setCurrentPage(1); 
+                setCurrentPage(1);
               }}
             >
               Active Campaigns
             </button>
             <button
               className={`px-4 py-2 text-black ${
-                activeTab === "passed" ? "border-b-2 border-green-600 font-bold" : ""
+                activeTab === "passed"
+                  ? "border-b-2 border-green-600 font-bold"
+                  : ""
               }`}
               onClick={() => {
                 setActiveTab("passed");
-                setCurrentPage(1); 
+                setCurrentPage(1);
               }}
             >
               Past Campaigns
             </button>
           </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 mt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 mt-6">
             {currentCampaigns.length > 0 ? (
               currentCampaigns.map((campaign) => (
                 <Link key={campaign.id} href={`/campaigns/${campaign.slug}`}>
-                  <CampaignCard 
+                  <CampaignCard
                     id={campaign.id}
                     title={campaign.title}
                     description={campaign.description || ""}
                     image={campaign.image}
                     raisedAmount={campaign.raised.toString()}
-                    daysLeft={12}
-                    progress={Math.round((campaign.raised / campaign.goal) * 100)}
+                    daysLeft={campaign.endDate ? calculateDaysLeft(campaign.endDate) : 0}
+                    progress={Math.round(
+                      (campaign.raised / campaign.goal) * 100
+                    )}
                     status={campaign.status}
                     slug={campaign.slug}
                   />
@@ -106,10 +112,8 @@ const Page = () => {
             )}
           </div>
 
-        
           {totalPages > 1 && (
             <div className="flex justify-center space-x-2 mt-6">
-              
               <button
                 onClick={goToPreviousPage}
                 disabled={currentPage === 1}
@@ -117,10 +121,9 @@ const Page = () => {
                   currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               >
-                {"<"}
+                <ChevronLeftIcon className="w-4 h-4" />
               </button>
 
-              
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   key={i}
@@ -133,15 +136,16 @@ const Page = () => {
                 </button>
               ))}
 
-            
               <button
                 onClick={goToNextPage}
                 disabled={currentPage === totalPages}
                 className={`px-3 py-1 border  border-green-600  text-black rounded ${
-                  currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+                  currentPage === totalPages
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
                 }`}
               >
-                {">"}
+                <ChevronRightIcon className="w-4 h-4" />
               </button>
             </div>
           )}
