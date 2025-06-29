@@ -23,28 +23,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body className={inter.className}>
         <StarknetProvider>
           <Navbar />
-          <main>
-            {children}
-            <Toaster
-              position="top-center"
-              toastOptions={{
-                style: {
-                  background: "#1A5D1A",
-                  color: "#fff",
-                  padding: "10px 20px",
-                  borderRadius: "5px",
-                  fontSize: "16px",
-                },
-                duration: 3000,
-              }}
-            />
-          </main>
+          <main className="min-h-screen">{children}</main>
           <Footer />
         </StarknetProvider>
+        <Toaster position="bottom-right" />
       </body>
     </html>
   );
