@@ -36,16 +36,26 @@ export default function MyDashboard() {
           </button>
           <div className="absolute bottom-0 left-0 w-full h-1 border-b-1 border-[#E5E7EB]"></div>
         </div>
+
+        <button>
+          <a
+            href="/supported-campaign"
+            className="bg-[#0A4D1C] text-white px-4 py-2 rounded-md w-fit m-auto"
+          >
+            View Campaigns
+          </a>
+        </button>
+        <button>
+          <a
+            href="/become-creator"
+            className="bg-[#0A4D1C] text-white px-4 py-2 rounded-md w-fit m-auto"
+          >
+            Become a Creator
+          </a>
+        </button>
       </div>
+
       <DisplayedSection section={activeTab} />
-      <button>
-      <a
-        href="/become-creator"
-        className="bg-[#0A4D1C] text-white px-4 py-2 rounded-md w-fit m-auto"
-      >
-        Become a Creator
-      </a>
-      </button>
     </div>
   );
 }
