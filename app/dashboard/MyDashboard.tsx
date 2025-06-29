@@ -45,17 +45,17 @@ export default function MyDashboard() {
             View Campaigns
           </a>
         </button>
+        <button>
+          <a
+            href="/become-creator"
+            className="bg-[#0A4D1C] text-white px-4 py-2 rounded-md w-fit m-auto"
+          >
+            Become a Creator
+          </a>
+        </button>
       </div>
 
       <DisplayedSection section={activeTab} />
-      <button>
-        <a
-          href="/become-creator"
-          className="bg-[#0A4D1C] text-white px-4 py-2 rounded-md w-fit m-auto"
-        >
-          Become a Creator
-        </a>
-      </button>
     </div>
   );
 }
