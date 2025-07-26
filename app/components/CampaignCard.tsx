@@ -45,9 +45,8 @@ const Card: React.FC<CardProps> = ({
           <Image
             src={image}
             alt={title}
-            layout="fill"
-            objectFit="cover"
-            className="rounded-t-lg"
+            fill
+            className="rounded-t-lg object-cover"
           />
           <button
             onClick={handleShareClick}

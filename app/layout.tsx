@@ -6,6 +6,7 @@ import Footer from "./components/Footer";
 import { Toaster } from "react-hot-toast";
 import { StarknetProvider } from "./components/starknet-provider";
 
+
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "800"],
