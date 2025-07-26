@@ -3,9 +3,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import { ConnectButton } from "./connect-button";
+import { useAccount } from "@starknet-react/core";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isConnected } = useAccount();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -45,24 +47,29 @@ export default function Navbar() {
             >
               Faqs
             </Link>
+            {isConnected && (
+             
             <Link
               href="/new-campaign"
               className="text-gray-700 hover:text-[#1A5D1A] transition-colors"
             >
               New Campaign
             </Link>
+             )}
             <Link
               href="/leaderboard"
               className="text-gray-700 hover:text-[#1A5D1A] transition-colors"
             >
               Leaderboard
             </Link>
-            <Link
-              href="/dashboard"
-              className="text-gray-700 hover:text-[#1A5D1A] transition-colors"
-            >
-              Dashboard
-            </Link>
+            {isConnected && (
+              <Link
+                href="/dashboard"
+                className="text-gray-700 hover:text-[#1A5D1A] transition-colors"
+              >
+                Dashboard
+              </Link>
+            )}
           </nav>
 
           {/* Desktop Connect Wallet Button */}
@@ -132,13 +139,15 @@ export default function Navbar() {
             >
               Leaderboard
             </Link>
-            <Link
-              href="/dashboard"
-              className="block px-3 py-2 text-gray-700 hover:text-[#1A5D1A] hover:bg-gray-50 rounded-md"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Dashboard
-            </Link>
+            {isConnected && (
+              <Link
+                href="/dashboard"
+                className="block px-3 py-2 text-gray-700 hover:text-[#1A5D1A] hover:bg-gray-50 rounded-md"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+            )}
           </div>
         </div>
       )}
