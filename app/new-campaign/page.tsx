@@ -1,6 +1,7 @@
 // import Navbar from '../components/Navbar'
 "use client";
 import React, { useState } from 'react';
+import { Upload, X } from 'lucide-react';
 import { generateCampaignSlug } from '../utils/slugify';
 
 export default function CreateCampaign() {
@@ -8,6 +9,10 @@ export default function CreateCampaign() {
 
 	const [campaignTitle, setCampaignTitle] = useState('');
 	const [campaignSlug, setCampaignSlug] = useState('');
+	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+	const [uploading, setUploading] = useState(false);
+	const [ipfsUrl, setIpfsUrl] = useState<string | null>(null);
 	
 	const handleCampaignTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const title = e.target.value;
@@ -21,6 +26,77 @@ export default function CreateCampaign() {
 				slugCache.set(title, newSlug);
 				setCampaignSlug(newSlug);
 			}
+		}
+	};
+
+	const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (file) {
+			// Check if file is an image
+			if (file.type.startsWith('image/')) {
+				setSelectedFile(file);
+				// Create preview URL
+				const url = URL.createObjectURL(file);
+				setPreviewUrl(url);
+			} else {
+				alert('Please select an image file');
+			}
+		}
+	};
+
+	const removeFile = () => {
+		setSelectedFile(null);
+		if (previewUrl) {
+			URL.revokeObjectURL(previewUrl);
+			setPreviewUrl(null);
+		}
+		setIpfsUrl(null);
+	};
+
+	const uploadToIPFS = async (): Promise<string | null> => {
+		if (!selectedFile) {
+			alert('Please select an image first');
+			return null;
+		}
+
+		try {
+			setUploading(true);
+			const formData = new FormData();
+			formData.append('file', selectedFile);
+
+			const response = await fetch('/api/upload', {
+				method: 'POST',
+				body: formData,
+			});
+
+			if (!response.ok) {
+				throw new Error('Upload failed');
+			}
+
+			const result = await response.json();
+			setIpfsUrl(result.ipfsUrl);
+			return result.ipfsUrl;
+		} catch (error) {
+			console.error('Error uploading to IPFS:', error);
+			alert('Failed to upload image to IPFS. Please try again.');
+			return null;
+		} finally {
+			setUploading(false);
+		}
+	};
+
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		
+		// Upload image to IPFS first
+		const imageUrl = await uploadToIPFS();
+		
+		if (imageUrl) {
+			console.log('Campaign created with IPFS image URL:', imageUrl);
+			console.log('Campaign Title:', campaignTitle);
+			console.log('Campaign Slug:', campaignSlug);
+			// Here you can add your campaign creation logic
+			alert(`Campaign created successfully! Image uploaded to IPFS: ${imageUrl}`);
 		}
 	};
 	
@@ -52,6 +128,7 @@ export default function CreateCampaign() {
 							<h3 className="text-xl text-black font-medium mb-4">
 								Campaign Details
 							</h3>
+							<form onSubmit={handleSubmit}>
 
 							<div className="mb-4">
 								<label className="block text-black text-sm font-medium mb-1">
@@ -71,12 +148,6 @@ export default function CreateCampaign() {
 									Campaign Description
 								</label>
 								<div className="border border-gray-300 rounded overflow-hidden">
-									<div className="flex space-x-4 px-3 py-2 border-b">
-										<button className="font-bold text-black">B</button>
-										<button className="italic text-black">I</button>
-										<button className="underline text-black">U</button>
-										<button className="text-black">•</button>
-									</div>
 									<textarea
 										placeholder="Start typing your campaign description..."
 										className="w-full text-black p-3 focus:outline-none min-h-[120px]"
@@ -113,18 +184,69 @@ export default function CreateCampaign() {
 
 							<div className="mb-6">
 								<label className="block text-black text-sm font-medium mb-1">
-									Campaign Image Url
+									Campaign Image
 								</label>
-								<input
-									type="text"
-									placeholder="Enter your campaign image url"
-									className="w-full px-3 py-2 border text-black border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#1A5D1A]"
-								/>
+								
+								{!selectedFile ? (
+									<div className="relative">
+										<input
+											type="file"
+											accept="image/*"
+											onChange={handleFileSelect}
+											className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+											id="file-upload"
+										/>
+										<div className="border-2 border-dashed border-[#1A5D1A] rounded-lg p-8 text-center hover:border-green-600 hover:bg-green-50 transition-colors cursor-pointer">
+											<Upload className="mx-auto h-12 w-12 text-[#1A5D1A] mb-4" />
+											<p className="text-[#1A5D1A] font-medium mb-2">Click to upload campaign image</p>
+											<p className="text-gray-500 text-sm">PNG, JPG, GIF up to 10MB</p>
+										</div>
+									</div>
+								) : (
+									<div className="relative">
+										<div className="border-2 border-[#1A5D1A] rounded-lg p-4 bg-green-50">
+											<div className="flex items-center justify-between mb-3">
+												<span className="text-[#1A5D1A] font-medium text-sm">Selected Image:</span>
+												<button
+													onClick={removeFile}
+													className="text-red-500 hover:text-red-700 transition-colors"
+													type="button"
+												>
+													<X className="h-5 w-5" />
+												</button>
+											</div>
+											{previewUrl && (
+												<img
+													src={previewUrl}
+													alt="Campaign preview"
+													className="w-full h-32 object-cover rounded-md mb-2"
+												/>
+											)}
+											<p className="text-gray-700 text-sm truncate">{selectedFile.name}</p>
+											<p className="text-gray-500 text-xs">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+											{ipfsUrl && (
+												<div className="mt-2 p-2 bg-green-100 rounded">
+													<p className="text-green-800 text-xs font-medium">✅ Uploaded to IPFS</p>
+													<p className="text-green-600 text-xs truncate">{ipfsUrl}</p>
+												</div>
+											)}
+										</div>
+									</div>
+								)}
 							</div>
 
-							<button className="bg-green-800 text-white font-medium py-2 px-6 rounded hover:bg-green-700 transition-colors">
-								Launch Campaign
+							<button 
+								type="submit" 
+								disabled={uploading || !selectedFile || !campaignTitle.trim()}
+								className={`font-medium py-2 px-6 rounded transition-colors ${
+									uploading || !selectedFile || !campaignTitle.trim() 
+										? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+										: 'bg-green-800 text-white hover:bg-green-700'
+								}`}
+							>
+								{uploading ? 'Uploading to IPFS...' : 'Launch Campaign'}
 							</button>
+							</form>
 						</div>
 					</div>
 

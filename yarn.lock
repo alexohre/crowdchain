@@ -1113,9 +1113,11 @@ __metadata:
     autoprefixer: "npm:^10.0.1"
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.1.1"
+    dotenv: "npm:^17.2.1"
     get-starknet-core: "npm:4.0.0"
     lucide-react: "npm:^0.525.0"
     next: "npm:14.1.0"
+    pinata: "npm:^2.4.9"
     postcss: "npm:^8"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
@@ -1286,6 +1288,13 @@ __metadata:
     "@babel/runtime": "npm:^7.8.7"
     csstype: "npm:^3.0.2"
   checksum: 10c0/f735074d66dd759b36b158fa26e9d00c9388ee0e8c9b16af941c38f014a37fc80782de83afefd621681b19ac0501034b4f1c4a3bff5caa1b8667f0212b5e124c
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^17.2.1":
+  version: 17.2.1
+  resolution: "dotenv@npm:17.2.1"
+  checksum: 10c0/918dd2f9d8b8f86b0afabad9534793d51de3718c437f9e7b6525628cf68c1d4ae768cc37a5afff38c066f58a8ecf549f4ac6cd5617485bd328e826112cc2650a
   languageName: node
   linkType: hard
 
@@ -2218,6 +2227,21 @@ __metadata:
   version: 2.3.0
   resolution: "pify@npm:2.3.0"
   checksum: 10c0/551ff8ab830b1052633f59cb8adc9ae8407a436e06b4a9718bcb27dc5844b83d535c3a8512b388b6062af65a98c49bdc0dd523d8b2617b188f7c8fee457158dc
+  languageName: node
+  linkType: hard
+
+"pinata@npm:^2.4.9":
+  version: 2.4.9
+  resolution: "pinata@npm:2.4.9"
+  peerDependencies:
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 10c0/f9eead37ca2dd865e6d571dc59e8459e30e196b014f6111702e7493213ed238e94318ae1dcc7a82a7befec046ba481ee672ee11c523afd40c9f1b3af579f96e7
   languageName: node
   linkType: hard
 
