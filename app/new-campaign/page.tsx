@@ -13,6 +13,7 @@ export default function CreateCampaign() {
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 	const [uploading, setUploading] = useState(false);
 	const [ipfsUrl, setIpfsUrl] = useState<string | null>(null);
+	const [paymentOption, setPaymentOption] = useState('STRK');
 	
 	const handleCampaignTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const title = e.target.value;
@@ -95,8 +96,9 @@ export default function CreateCampaign() {
 			console.log('Campaign created with IPFS image URL:', imageUrl);
 			console.log('Campaign Title:', campaignTitle);
 			console.log('Campaign Slug:', campaignSlug);
+			console.log('Payment Option:', paymentOption);
 			// Here you can add your campaign creation logic
-			alert(`Campaign created successfully! Image uploaded to IPFS: ${imageUrl}`);
+			alert(`Campaign created successfully! Payment option: ${paymentOption}, Image uploaded to IPFS: ${imageUrl}`);
 		}
 	};
 	
@@ -155,6 +157,24 @@ export default function CreateCampaign() {
 								</div>
 							</div>
 
+							<div className="mb-6">
+								<label className="block text-black text-sm font-medium mb-1">
+									Payment Option
+								</label>
+								<select
+									value={paymentOption}
+									onChange={(e) => setPaymentOption(e.target.value)}
+									className="w-full px-3 py-2 border text-black border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#1A5D1A] bg-white"
+								>
+									<option value="STRK">Starknet Token (STRK)</option>
+									<option value="USDC">USD Coin (USDC)</option>
+									<option value="ETH">Ethereum (ETH)</option>
+								</select>
+								<div className="text-xs text-gray-500 mt-1">
+									Choose the Starknet token for campaign funding
+								</div>
+							</div>
+
 							<div className="grid grid-cols-2 gap-4 mb-4">
 								<div>
 									<label className="block text-black text-sm font-medium mb-1">
@@ -162,11 +182,11 @@ export default function CreateCampaign() {
 									</label>
 									<input
 										type="number"
-										placeholder="0.00"
+										placeholder={`0.00 ${paymentOption}`}
 										className="w-full px-3 py-2 border text-black border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-[#1A5D1A]"
 									/>
 									<div className="text-xs text-gray-500 mt-1">
-										Minimum 0.1 ETH
+										Minimum {paymentOption === 'STRK' ? '50 STRK' : paymentOption === 'USDC' ? '100 USDC' : '0.05 ETH'}
 									</div>
 								</div>
 
