@@ -1,9 +1,9 @@
 // Contract ABIs and addresses
 
-// Supermarket contract address on Starknet Sepolia
-export const CROWDCHAIN_CONTRACT_ADDRESS = "0x07a0eb1ebed805a8dfda56abff4f937c2b400253a7bace8dc9c4192b0e81e60c";
+// Crowdchain contract address on Starknet Sepolia
+export const CROWDCHAIN_CONTRACT_ADDRESS = "0x071f70bfe22a60add0d5451c305bbcf18468bf945777eb8048dfb535c3c79e92";
 
-// Basic ABI for the Supermarket contract
+// Basic ABI for the Crowdchain contract
 // This is a placeholder - replace with the actual ABI of your contract
 export const CROWDCHAIN_ABI = [
   {
@@ -137,6 +137,20 @@ export const CROWDCHAIN_ABI = [
       {
         "name": "completed_at",
         "type": "core::integer::u64"
+      }
+    ]
+  },
+  {
+    "type": "enum",
+    "name": "core::bool",
+    "variants": [
+      {
+        "name": "False",
+        "type": "()"
+      },
+      {
+        "name": "True",
+        "type": "()"
       }
     ]
   },
@@ -407,6 +421,127 @@ export const CROWDCHAIN_ABI = [
           }
         ],
         "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "is_admin_or_owner",
+        "inputs": [
+          {
+            "name": "address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "is_approved_creator",
+        "inputs": [
+          {
+            "name": "address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_owner",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "add_admin",
+        "inputs": [
+          {
+            "name": "admin",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "remove_admin",
+        "inputs": [
+          {
+            "name": "admin",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "is_admin",
+        "inputs": [
+          {
+            "name": "address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_admin_count",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u32"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_admin_by_index",
+        "inputs": [
+          {
+            "name": "index",
+            "type": "core::integer::u32"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "get_all_admins",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::array::Array::<core::starknet::contract_address::ContractAddress>"
+          }
+        ],
+        "state_mutability": "view"
       }
     ]
   },
@@ -414,20 +549,6 @@ export const CROWDCHAIN_ABI = [
     "type": "impl",
     "name": "PausableImpl",
     "interface_name": "openzeppelin_security::interface::IPausable"
-  },
-  {
-    "type": "enum",
-    "name": "core::bool",
-    "variants": [
-      {
-        "name": "False",
-        "type": "()"
-      },
-      {
-        "name": "True",
-        "type": "()"
-      }
-    ]
   },
   {
     "type": "interface",
@@ -646,7 +767,7 @@ export const CROWDCHAIN_ABI = [
     "name": "constructor",
     "inputs": [
       {
-        "name": "default_admin",
+        "name": "owner",
         "type": "core::starknet::contract_address::ContractAddress"
       }
     ]
