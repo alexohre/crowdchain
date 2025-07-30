@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
-import { ChevronsUpDown, X } from "lucide-react";
+import { X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -13,13 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { toast } from "react-hot-toast";
-import Image from "next/image";
 
-// Define wallet connectors with their IDs, names, and icons
-const WALLET_CONNECTORS = [
-  { id: "argentX", name: "Argent X", icon: "/assets/argent.svg" },
-  { id: "braavos", name: "Braavos", icon: "/assets/braavos.svg" },
-] as const;
 
 type ConnectButtonVariant = "default" | "navbar";
 
@@ -37,25 +31,11 @@ export function ConnectButton({ variant = "default" }: ConnectButtonProps) {
   const { isConnected, address } = useAccount();
   const { disconnect } = useDisconnect();
 
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isDisconnectModalOpen, setIsDisconnectModalOpen] = useState(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Handle click outside to close dropdown
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+
 
   // Handle connection errors with toast notifications and UI display
   useEffect(() => {
@@ -72,11 +52,10 @@ export function ConnectButton({ variant = "default" }: ConnectButtonProps) {
     setIsWalletModalOpen(true);
   };
 
-  const handleWalletSelect = async (connectorId: string) => {
+  const handleWalletSelect = async (connector: any) => {
     try {
-      const connector = connectors.find((c) => c.id === connectorId);
-      if (!connector) {
-        const message = `No connector found for ${connectorId}. Please ensure the wallet is installed.`;
+      if (!connector.available()) {
+        const message = `${connector.name} wallet is not installed. Please install it first.`;
         setErrorMessage(message);
         toast.error(message);
         return;
@@ -99,14 +78,13 @@ export function ConnectButton({ variant = "default" }: ConnectButtonProps) {
 
   const confirmDisconnect = () => {
     disconnect();
-    setIsDropdownOpen(false);
     setIsDisconnectModalOpen(false);
     toast.success("Wallet disconnected successfully!");
   };
 
   return (
     <>
-      <div className="relative" ref={dropdownRef}>
+      <div className="relative">
         {isConnected && address ? (
           <div
             className={cn(
@@ -115,35 +93,17 @@ export function ConnectButton({ variant = "default" }: ConnectButtonProps) {
             )}
           >
             <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              onClick={handleDisconnect}
               className={cn(
                 "flex items-center gap-2 border-2 border-[#1A5D1A] text-[#1A5D1A] font-extrabold transition-colors hover:bg-green-50",
                 variant === "navbar"
                   ? "rounded-[8px] px-4 py-2"
                   : "rounded-[8px] px-6 py-3 sm:px-8 sm:py-4 md:px-10 md:py-5 text-base sm:text-lg md:text-xl"
               )}
-              aria-label="Account menu"
+              aria-label="Disconnect wallet"
             >
               {truncateAddress(address)}
-              <ChevronsUpDown className="w-4 h-4" />
             </button>
-            {isDropdownOpen && (
-              <div
-                className={cn(
-                  "absolute right-0 mt-2 bg-white shadow-lg z-50 border border-[#1A5D1A]",
-                  variant === "default"
-                    ? "rounded-[8px] px-8 py-3 sm:py-4 md:py-5 text-base font-extrabold w-fit"
-                    : "rounded-[8px] w-48"
-                )}
-              >
-                <button
-                  onClick={handleDisconnect}
-                  className="w-full text-left px-4 py-2 bg-[#1A5D1A] text-white font-extrabold hover:bg-green-700 transition-colors rounded-[8px]"
-                >
-                  Disconnect Wallet
-                </button>
-              </div>
-            )}
           </div>
         ) : (
           <button
@@ -174,42 +134,47 @@ export function ConnectButton({ variant = "default" }: ConnectButtonProps) {
               Select your preferred wallet to connect
             </p>
             <div className="space-y-3">
-              {connectors.map((connector) => {
-                const wallet = WALLET_CONNECTORS.find(
-                  (w) => w.id === connector.id
-                ) || {
-                  id: connector.id,
-                  name: connector.name || connector.id,
-                  icon: "/default-wallet.png", // Fallback icon
-                };
-                return (
-                  <Card
-                    key={wallet.id}
-                    onClick={() => handleWalletSelect(wallet.id)}
-                    className={cn(
-                      "cursor-pointer hover:bg-green-50 p-4 transition-colors border-[#1A5D1A]"
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      {wallet.icon && (
-                        <Image
-                          src={wallet.icon}
-                          alt={wallet.name}
-                          width={28}
-                          height={28}
-                          className="rounded-md"
-                        />
+              {connectors.length === 0 ? (
+                <p className="text-center text-gray-500 py-4">
+                  No wallet connectors available. Please install Argent X or Braavos wallet.
+                </p>
+              ) : (
+                connectors.map((connector) => {
+                  return (
+                    <Card
+                      key={connector.id}
+                      onClick={() => handleWalletSelect(connector)}
+                      className={cn(
+                        "cursor-pointer hover:bg-green-50 p-4 transition-colors border-[#1A5D1A]",
+                        !connector.available() && "opacity-50 cursor-not-allowed"
                       )}
-                      <div className="text-sm text-[#374151] font-medium">
-                        <h2 className="text-sm font-extrabold text-[#1A5D1A]">
-                          {wallet.name}
-                        </h2>
-                        <p>Connect with {wallet.name} wallet</p>
+                    >
+                      <div className="flex items-center gap-3">
+                        {connector.icon && (
+                          <img
+                            src={typeof connector.icon === 'string' 
+                              ? connector.icon 
+                              : connector.icon?.dark || connector.icon?.light}
+                            alt={connector.name}
+                            className="h-7 w-7 rounded-md"
+                            onError={(e) => {
+                              e.currentTarget.src = "/placeholder-logo.png"
+                            }}
+                          />
+                        )}
+                        <div className="text-sm text-[#374151] font-medium">
+                          <h2 className="text-sm font-extrabold text-[#1A5D1A]">
+                            {connector.name}
+                          </h2>
+                          <p className="text-sm text-gray-600">
+                            {connector.available() ? "Connect using " + connector.name : "Not installed"}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </Card>
-                );
-              })}
+                    </Card>
+                  );
+                })
+              )}
             </div>
           </div>
         </DialogContent>

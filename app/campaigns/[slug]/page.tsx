@@ -4,13 +4,13 @@ import CampaignDetailContent from "./CampaignDetailContent";
 import { notFound } from "next/navigation";
 
 interface CampaignDetailPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
-export default function CampaignDetailPage({ params }: CampaignDetailPageProps) {
-  const { slug } = params;
+export default async function CampaignDetailPage({ params }: CampaignDetailPageProps) {
+  const { slug } = await params;
   const campaign = findCampaignBySlug(campaigns, slug);
 
   if (!campaign) {
