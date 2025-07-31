@@ -12,11 +12,6 @@ export const steps: StepTpye[] = [
     alt: "professional",
   },
   {
-    label: "Project Details",
-    img: "images/project.png",
-    alt: "project",
-  },
-  {
     label: "Verification",
     img: "images/verification.png",
     alt: "verification",

@@ -542,6 +542,29 @@ export const CROWDCHAIN_ABI = [
           }
         ],
         "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "submit_creator_application",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
+        "name": "is_creator_application_pending",
+        "inputs": [
+          {
+            "name": "address",
+            "type": "core::starknet::contract_address::ContractAddress"
+          }
+        ],
+        "outputs": [
+          {
+            "type": "core::bool"
+          }
+        ],
+        "state_mutability": "view"
       }
     ]
   },
@@ -1028,6 +1051,18 @@ export const CROWDCHAIN_ABI = [
   },
   {
     "type": "event",
+    "name": "crowdchain_contracts::events::CrowdchainEvent::CreatorApplicationSubmitted",
+    "kind": "struct",
+    "members": [
+      {
+        "name": "applicant",
+        "type": "core::starknet::contract_address::ContractAddress",
+        "kind": "key"
+      }
+    ]
+  },
+  {
+    "type": "event",
     "name": "crowdchain_contracts::contracts::Crowdchain::Crowdchain::Event",
     "kind": "enum",
     "variants": [
@@ -1074,6 +1109,11 @@ export const CROWDCHAIN_ABI = [
       {
         "name": "ContributionProcessed",
         "type": "crowdchain_contracts::events::CrowdchainEvent::ContributionProcessed",
+        "kind": "nested"
+      },
+      {
+        "name": "CreatorApplicationSubmitted",
+        "type": "crowdchain_contracts::events::CrowdchainEvent::CreatorApplicationSubmitted",
         "kind": "nested"
       }
     ]

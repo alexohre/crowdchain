@@ -1,6 +1,9 @@
 "use client";
-import { useState, useRef, FormEvent } from "react";
+import { useState, useRef, FormEvent, useEffect } from "react";
 import toast from "react-hot-toast";
+import { useContract, useSendTransaction, useAccount, useTransactionReceipt } from '@starknet-react/core';
+import { useRouter, notFound } from 'next/navigation';
+import { CROWDCHAIN_CONTRACT_ADDRESS, CROWDCHAIN_ABI } from '@/lib/contract';
 import { CreatorFormData } from "../types/creatorForm";
 import { steps } from "../data/steps";
 
@@ -10,19 +13,191 @@ const CreatorPage = () => {
     fullName: "",
     email: "",
     walletAddress: "",
-    profilePicture: null,
     professionalTitle: "",
     linkedIn: "",
     website: "",
-    projectCategory: "",
-    projectDescription: "",
     verificationDocs: [],
     termsAgreed: false,
   });
   const [simulateFailure, setSimulateFailure] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionStep, setSubmissionStep] = useState<'form' | 'blockchain' | 'backend' | 'complete'>('form');
+  
+  // Starknet contract integration
+  const { contract } = useContract({
+    address: CROWDCHAIN_CONTRACT_ADDRESS,
+    abi: CROWDCHAIN_ABI as any
+  });
+  const { sendAsync: sendSubmitCreatorApplication } = useSendTransaction({ calls: [] });
+  const [transactionHash, setTransactionHash] = useState<string>("");
+  const { data: receipt } = useTransactionReceipt({ hash: transactionHash, watch: true });
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const verificationDocsRef = useRef<HTMLInputElement>(null);
+
+  const { address, isConnected, account } = useAccount();
+  const router = useRouter();
+
+
+
+  // Auto-fill wallet address when connected
+  useEffect(() => {
+    if (isConnected && address) {
+      setFormData(prev => ({
+        ...prev,
+        walletAddress: address
+      }));
+    }
+  }, [isConnected, address]);
+
+  // Handle transaction receipt - wait for blockchain confirmation before submitting to backend
+  useEffect(() => {
+    if (receipt && transactionHash && submissionStep === 'blockchain') {
+      console.log('Transaction confirmed:', receipt);
+      toast.loading('Transaction confirmed! Saving application data...', { id: 'submission' });
+      setSubmissionStep('backend');
+      
+      // Submit to backend after blockchain confirmation
+      submitToBackend()
+        .then(() => {
+          setSubmissionStep('complete');
+          toast.success('Application submitted successfully! We\'ll review your application and get back to you soon.', { id: 'submission' });
+          
+          // Reset form
+          setFormData({
+            fullName: "",
+            email: "",
+            walletAddress: "",
+            professionalTitle: "",
+            linkedIn: "",
+            website: "",
+            verificationDocs: [],
+            termsAgreed: false,
+          });
+          
+          // Redirect to dashboard after a short delay
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 2000);
+        })
+        .catch((error) => {
+          console.error('Backend submission error:', error);
+          toast.error('Failed to save application data. Please try again.', { id: 'submission' });
+          setSubmissionStep('form');
+          setIsSubmitting(false);
+        })
+        .finally(() => {
+          setTransactionHash("");
+        });
+    }
+  }, [receipt, transactionHash, submissionStep, router]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const submitToBackend = async () => {
+    try {
+      // Create FormData to handle file uploads
+      const formDataToSend = new FormData();
+      
+      // Add text fields
+      formDataToSend.append('walletAddress', address || '');
+      formDataToSend.append('fullName', formData.fullName);
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('professionalTitle', formData.professionalTitle);
+      formDataToSend.append('linkedIn', formData.linkedIn);
+      formDataToSend.append('website', formData.website);
+      
+      // Add verification documents
+      if (formData.verificationDocs && formData.verificationDocs.length > 0) {
+        for (const file of formData.verificationDocs) {
+          formDataToSend.append('verificationDocs', file);
+        }
+      }
+      
+      const response = await fetch('http://localhost:3000/api/creator-application', {
+        method: 'POST',
+        // Don't set Content-Type header - let browser set it with boundary for FormData
+        body: formDataToSend,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit to backend');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Backend submission error:', error);
+      throw error;
+    }
+  };
+
+  const submitApplicationOnChain = async () => {
+    if (!account) throw new Error('No account connected');
+    
+    const call = contract?.populate('submit_creator_application', []);
+    
+    const result = await sendSubmitCreatorApplication([call!]);
+    
+    // Store transaction hash for receipt monitoring
+    if (result?.transaction_hash) {
+      setTransactionHash(result.transaction_hash);
+    }
+    
+    return result;
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (!isConnected || !address) {
+      toast.error('Please connect your wallet first');
+      return;
+    }
+
+    // Validate required fields
+    if (!formData.fullName || !formData.email || !formData.professionalTitle) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmissionStep('blockchain');
+
+    try {
+      // Submit application on-chain - transaction receipt will be handled by useEffect
+      toast.loading('Submitting application on-chain...', { id: 'submission' });
+      
+      await submitApplicationOnChain();
+      
+      // Transaction receipt monitoring and backend submission will be handled by useEffect
+      toast.loading('Waiting for transaction confirmation...', { id: 'submission' });
+
+    } catch (error: any) {
+      console.error('Submission error:', error);
+
+      let errorMessage = 'Failed to submit application. Please try again.';
+
+      if (error.message?.includes('Already approved creator')) {
+        errorMessage = 'You are already an approved creator!';
+      } else if (error.message?.includes('Application already pending')) {
+        errorMessage = 'You already have a pending application.';
+      } else if (error.message?.includes('Application already exists')) {
+        errorMessage = 'An application already exists for this wallet address.';
+      }
+
+      toast.error(errorMessage, { id: 'submission' });
+      setSubmissionStep('form');
+      setIsSubmitting(false);
+      setTransactionHash(""); // Clear transaction hash on error
+    }
+  };
 
   const handleNext = (e: FormEvent) => {
     e.preventDefault();
@@ -31,7 +206,7 @@ const CreatorPage = () => {
     if (step < steps.length) {
       setStep(step + 1);
     } else {
-      submitForm();
+      handleSubmit(e);
     }
   };
 
@@ -49,65 +224,10 @@ const CreatorPage = () => {
       return !!formData.professionalTitle;
     }
     if (step === 3) {
-      return !!formData.projectCategory && !!formData.projectDescription;
-    }
-    if (step === 4) {
       return formData.termsAgreed && formData.verificationDocs.length > 0;
     }
     return true;
-  };
-
-  const submitForm = async () => {
-    //API call simulation
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast.success("Application submitted successfully!", {
-        duration: 3000,
-      });
-
-      // Reset form
-      setFormData({
-        fullName: "",
-        email: "",
-        walletAddress: "",
-        profilePicture: null,
-        professionalTitle: "",
-        linkedIn: "",
-        website: "",
-        projectCategory: "",
-        projectDescription: "",
-        verificationDocs: [],
-        termsAgreed: false,
-      });
-      setStep(1);
-    } catch (error) {
-      toast.error("Submission failed. Please try again.", {
-        duration: 3000,
-        style: {
-          background: "#EF4444",
-          color: "#fff",
-          padding: "10px 20px",
-          borderRadius: "5px",
-          fontSize: "16px",
-        },
-      });
-    }
-  };
-
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData({ ...formData, profilePicture: e.target.files[0] });
-    }
-  };
+  };  
 
   const handleVerificationDocsChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -119,6 +239,11 @@ const CreatorPage = () => {
       });
     }
   };
+
+  // Don't render anything if not connected (will redirect to 404)
+    if (!isConnected) {
+    return null;
+    }
 
   return (
     <main className="mb-24">
@@ -202,52 +327,23 @@ const CreatorPage = () => {
                     name="walletAddress"
                     value={formData.walletAddress}
                     onChange={handleInputChange}
-                    placeholder="Connect wallet to auto-fill"
-                    className="w-full p-3 border-[1px] border-[#D1D5DB] rounded-tl-md rounded-bl-md outline-none text-[#9CA3AF] placeholder:text-[#9CA3AF] bg-[#F9FAFB]"
+                    placeholder="Wallet connected"
+                    className="w-full p-3 border-[1px] border-[#D1D5DB] rounded-tl-md rounded-bl-md outline-none text-[#374151] bg-[#F3F4F6] cursor-not-allowed"
+                    disabled
                     required
                   />
                   <button
                     type="button"
-                    className="px-4 py-3 bg-[#1B8520] text-white  border-[1px] border-transparent rounded-tr-md rounded-br-md flex justify-center items-center gap-2 cursor-pointer outline-none"
+                    className="px-4 py-3 bg-[#059669] text-white border-[1px] border-transparent rounded-tr-md rounded-br-md flex justify-center items-center gap-2 cursor-not-allowed opacity-75"
+                    disabled
                   >
                     <img
                       src="/images/connect.png"
                       alt="wallet-icon"
                       className="object-cover"
                     />
-                    Connect
+                    Connected
                   </button>
-                </div>
-              </div>
-              <div className="mb-5">
-                <label className="block text-sm text-black mb-2">
-                  Profile Picture
-                </label>
-                <div
-                  className="border-2 border-dashed border-[#D1D5DB] rounded-md p-5 min-h-40 text-center cursor-pointer flex flex-col justify-center items-center"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <img
-                    className="object-cover mb-1"
-                    src="/images/upload.png"
-                    alt="upload-icon"
-                  />
-                  <p className="text-[#4B5563] text-sm leading-7">
-                    Drag and drop your profile picture here <br /> or{" "}
-                    <span className="text-[#1B8520] underline">browse</span>
-                  </p>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                  {formData.profilePicture && (
-                    <p className="mt-2 text-gray-600">
-                      {formData.profilePicture.name}
-                    </p>
-                  )}
                 </div>
               </div>
             </div>
@@ -300,47 +396,8 @@ const CreatorPage = () => {
             </div>
           )}
 
-          {/* Step 3: Project Info */}
+          {/* Step 3: Verification Documents */}
           {step === 3 && (
-            <div className="bg-white p-8 rounded-lg border-[1px] border-[#E5E7EB]">
-              <h2 className="text-2xl font-bold text-black mb-6">
-                Project Info
-              </h2>
-              <div className="mb-5">
-                <label className="block text-sm text-black mb-2">
-                  Project Category
-                </label>
-                <select
-                  name="projectCategory"
-                  value={formData.projectCategory}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border-[1px] border-[#D1D5DB] rounded-md text-[#9CA3AF] placeholder:text-[#9CA3AF] bg-[#F9FAFB] outline-none"
-                  required
-                >
-                  <option value="">Select Category</option>
-                  <option value="tech">Tech</option>
-                  <option value="education">Education</option>
-                  <option value="research">Research</option>
-                </select>
-              </div>
-              <div className="mb-5">
-                <label className="block text-sm text-black mb-2">
-                  Project Description
-                </label>
-                <textarea
-                  name="projectDescription"
-                  value={formData.projectDescription}
-                  onChange={handleInputChange}
-                  placeholder="Describe your project"
-                  className="w-full p-3 border-[1px] border-[#D1D5DB] rounded-md text-[#9CA3AF] placeholder:text-[#9CA3AF] h-32 resize-y bg-[#F9FAFB] outline-none"
-                  required
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Step 4: Verification Documents */}
-          {step === 4 && (
             <div className="bg-white p-8 rounded-lg border-[1px] border-[#E5E7EB]">
               <h2 className="text-2xl font-bold text-black mb-6">
                 Verification Documents
