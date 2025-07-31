@@ -7,13 +7,20 @@ import {
   braavos,
   useInjectedConnectors,
   voyager,
-  publicProvider
+  jsonRpcProvider
 } from "@starknet-react/core";
 import type { ReactNode } from "react";
 
 interface StarknetProviderProps {
   children: ReactNode;
 }
+
+const provider = jsonRpcProvider({
+  rpc: () => ({
+    // ✅ Replace with your preferred working RPC endpoint
+    nodeUrl: "https://starknet-sepolia.public.blastapi.io/rpc/v0_8" // or Infura, Blast, etc.
+  })
+});
 
 export function StarknetProvider({ children }: StarknetProviderProps) {
   const { connectors } = useInjectedConnectors({
@@ -25,7 +32,7 @@ export function StarknetProvider({ children }: StarknetProviderProps) {
   return (
     <StarknetConfig
       chains={[sepolia]}
-      provider={publicProvider()}
+      provider={provider}
       connectors={connectors}
       explorer={voyager}
       autoConnect={true}
